@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body
+        {
+            text-align: center;
+            font-family: sans-serif;
+        }
+        #main
+        {
+           display:grid;
+           grid-template-columns: repeat(2,1fr);
+           grid-template-rows: auto;
+           gap:10px;
+           width:80%;
+           margin:auto;
+           height:600px;
+           border:2px solid blue;
+        }
+        #main>div
+        {
+            border:2px solid black;
+            padding:10px;
+            margin:20px;
+        }
+        #container
+        {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>WEATHER REPORT</h1>
+    <div id="main">
+        <div id="main1">
+            <lable>Enter Your City Name:</lable><br><br>
+           <input type="text" id="city"/><br><br>
+           <button onclick="getWeather()">Get weather</button>
+           <div id="container">
+           </div>
+        </div>
+        <div id="main2">
+            <lable>City map:</lable><br>
+            <div id="container1"></div>
+            <!-- <iframe width="600" height="500" id="gmap_canvas" src="https://maps.google.com/maps?q=mumbai&t=&z=13&ie=UTF8&iwloc=&output=embed" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe> -->
+        </div>
+    </div>
+    
+</body>
+</html>
+<script>
+
+   
+    let container=document.querySelector("#container")
+    let container1=document.querySelector("#container1")
+    
+    async function getWeather(){
+        try{
+            let city=document.getElementById("city").value;
+            let res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=f3711db931ba5ec84d51a1ec2bb68a68&units=metric`);
+            let data = await res.json();
+            appendData(data);
+            console.log(data);
+        }
+        catch(err){
+            console.log(err);
+        }
+    }
+
+function appendData(data){
+
+    container.innerHTML=null;
+    container1.innerHTML=null;
+
+    let name = document.createElement('h4');
+    name.innerText =`City Name : ${data.name}` ;
+
+    let temp_max = document.createElement('h4');
+    temp_max.innerText =`Maximum Temperature : ${data.main.temp_max}`;
+
+    let temp_min = document.createElement('h4');
+    temp_min.innerText =`Minimum Temperature : ${data.main.temp_min}`;
+
+    let pressure = document.createElement('h4');
+    pressure.innerText = `Pressure : ${data.main.pressure}` ;
+
+    let humidity = document.createElement('h4');
+    humidity.innerText = `Humidity : ${data.main.humidity}`;
+
+    let windspeed = document.createElement('h4');
+    windspeed.innerText = `Wind Speed : ${data.wind.speed} kmph`;
+
+    let clouds = document.createElement('h4');
+    clouds.innerText = `Clouds : ${data.clouds.all}`;
+
+    let map=document.createElement("iframe");
+    map.src=`https://maps.google.com/maps?q=${data.name}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
+    map.width=`600px`;
+    map.height=`500px`;
+
+    container.append(name,temp_max,temp_min,pressure,humidity,windspeed,clouds);
+    container1.append(map);
+}
+</script>
